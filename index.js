@@ -4,6 +4,7 @@ const app = express() ;
 const port = 3000; 
 const mongoose = require('mongoose') ;
 const cors = require('cors') ;
+const bcrypt = require('bcrypt') ;
 
 dotenv.config() ;
 app.use(cors()) ;
@@ -21,7 +22,10 @@ app.post("/register",async(req,res)=>{
     
     const  {name,email,mobile,password} = req.body ;
     const oldUser = await User.findOne({ email : email }) ;
-    
+     
+    const encryptedPassword = await bcrypt.hash(password,10) ;
+
+
     if(oldUser)
     {
         return res.send({data : "User already exists!!!"}) ;
@@ -32,7 +36,7 @@ app.post("/register",async(req,res)=>{
             name: name,
             email: email,
             mobile,
-            password
+            password:encryptedPassword
         })
         res.send({status: "ok" ,data: "User created"}) ;
         
